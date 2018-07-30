@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">Demo_CustomWebYoutubePlayer</string>
+    <string name="browse_title"><![CDATA[Videos by Your Company]]></string>
+    <string name="related_movies">Related Videos</string>
+    <string name="grid_view">Grid View</string>
+    <string name="error_fragment">Error Fragment</string>
+    <string name="personal_settings">Personal Settings</string>
+    <string name="watch_trailer_1">Watch trailer</string>
+    <string name="watch_trailer_2">FREE</string>
+    <string name="rent_1">Rent By Day</string>
+    <string name="rent_2">From $1.99</string>
+    <string name="buy_1">Buy and Own</string>
+    <string name="buy_2">AT $9.99</string>
+    <string name="movie">Movie</string>
+
+    <!-- Error messages -->
+    <string name="error_fragment_message">An error occurred</string>
+    <string name="dismiss_error">Dismiss</string>
+
+
+    <!--web view-->
+    <string name="web_view_loading_message">現正前往%s,請稍後..</string>
+    <string name="web_view_ssl_title">SSL 憑證錯誤</string>
+    <string name="web_view_ssl_message">無法驗證伺服器SSL憑證。\n仍要繼續嗎?</string>
+    <string name="web_view_ssl_toast">請同意憑證,方可使用此功能</string>
+    <string name="yes">是</string>
+    <string name="no">否</string>
+</resources>

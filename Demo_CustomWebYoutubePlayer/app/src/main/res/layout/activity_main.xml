@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:gravity="center"
+    android:layout_height="match_parent">
+
+    <tw.com.sung.noel.demo_customwebyoutubeplayer.util.view.CustomYoutubePlayer
+        android:id="@+id/custom_youtube_player"
+        android:layout_width="700dp"
+        android:layout_height="400dp" />
+</LinearLayout>
