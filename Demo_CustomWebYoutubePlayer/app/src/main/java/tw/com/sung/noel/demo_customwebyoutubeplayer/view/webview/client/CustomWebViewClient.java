@@ -1,4 +1,4 @@
-package tw.com.sung.noel.demo_customwebyoutubeplayer.util.view.webview;
+package tw.com.sung.noel.demo_customwebyoutubeplayer.view.webview.client;
 
 import android.app.AlertDialog;
 import android.content.Context;

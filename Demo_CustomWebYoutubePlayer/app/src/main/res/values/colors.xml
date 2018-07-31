@@ -6,6 +6,14 @@
     <color name="selected_background">#ffaa3f</color>
     <color name="default_background">#3d3d3d</color>
 
-    <color name="colorAccent">#FF4081</color>
+
+
+    <color name="loading_circle">#FF4081</color>
+
+    <color name="progress">#8abdf6</color>
+    <color name="progress_bg">#a7979797</color>
+    <color name="controller_bg">#4a90e2</color>
+
+    <color name="focus_bg">#82b4ee</color>
 
 </resources>

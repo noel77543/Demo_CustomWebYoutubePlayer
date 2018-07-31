@@ -13,7 +13,7 @@
                 <size
                     android:width="60dp"
                     android:height="60dp" />
-                <solid android:color="@color/colorAccent" />
+                <solid android:color="@color/loading_circle" />
             </shape>
         </rotate>
     </item>

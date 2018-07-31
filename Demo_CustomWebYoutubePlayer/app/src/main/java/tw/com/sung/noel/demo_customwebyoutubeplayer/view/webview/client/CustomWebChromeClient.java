@@ -1,13 +1,10 @@
-package tw.com.sung.noel.demo_customwebyoutubeplayer.util.view.webview;
+package tw.com.sung.noel.demo_customwebyoutubeplayer.view.webview.client;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
-
-import tw.com.sung.noel.demo_customwebyoutubeplayer.R;
 
 
 public class CustomWebChromeClient extends WebChromeClient {

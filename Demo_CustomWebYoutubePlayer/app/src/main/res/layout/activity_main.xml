@@ -4,8 +4,9 @@
     android:gravity="center"
     android:layout_height="match_parent">
 
-    <tw.com.sung.noel.demo_customwebyoutubeplayer.util.view.CustomYoutubePlayer
+    <tw.com.sung.noel.demo_customwebyoutubeplayer.view.CustomYoutubePlayer
         android:id="@+id/custom_youtube_player"
-        android:layout_width="700dp"
-        android:layout_height="400dp" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 </LinearLayout>
