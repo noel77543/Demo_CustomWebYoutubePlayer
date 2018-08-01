@@ -16,7 +16,7 @@ import tw.com.sung.noel.demo_customwebyoutubeplayer.view.webview.controller.Cust
 import tw.com.sung.noel.demo_customwebyoutubeplayer.view.webview.model.ParamsModel;
 
 
-public class CustomYoutubePlayer extends RelativeLayout implements CustomWebView.OnProgressChangeListener, View.OnClickListener, Runnable, CustomWebViewController.OnControllerEventListener {
+public class CustomYoutubePlayer extends RelativeLayout implements CustomWebView.OnWebProgressChangeListener, View.OnClickListener, Runnable, CustomWebView.OnPlayerProgressChangeListener, CustomWebView.OnPlayerStateChangeListener {
 
     private final int _CONTROLLER_ANIMATION_TIME = 300;
     private Context context;
@@ -29,12 +29,15 @@ public class CustomYoutubePlayer extends RelativeLayout implements CustomWebView
 
     //是否使用控制台 預設為true
     private boolean isController = true;
-    //目前controller是否為可見 預設為false
+    //若有使用控制台 目前controller是否為可見 預設為false
     private boolean isControllerVisible;
+    //可否 上一部影片 or 下一部影片 預設為true
+    private boolean isCanLoadOtherVideo =true;
 
     private int playerHeightPx;
     private int playerWidthPx;
 
+    //----------
 
     public CustomYoutubePlayer(Context context) {
         super(context);
@@ -52,11 +55,9 @@ public class CustomYoutubePlayer extends RelativeLayout implements CustomWebView
     //---------
     private void init() {
         customWebViewHandler = new CustomWebViewHandler();
-
         setFocusable(true);
         setFocusableInTouchMode(true);
         setOnClickListener(this);
-
         initPlayer();
         initProgressBar();
     }
@@ -72,7 +73,10 @@ public class CustomYoutubePlayer extends RelativeLayout implements CustomWebView
         webViewParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         webViewParams.addRule(ALIGN_PARENT_LEFT | ALIGN_PARENT_TOP);
         customWebView.setLayoutParams(webViewParams);
-        customWebView.setOnProgressChangeListener(this);
+        customWebView.setOnWebProgressChangeListener(this);
+        customWebView.setOnPlayerProgressChangeListener(this);
+        customWebView.setOnPlayerStateChangeListener(this);
+
         addView(customWebView);
     }
     //--------
@@ -111,9 +115,8 @@ public class CustomYoutubePlayer extends RelativeLayout implements CustomWebView
      * @param newProgress
      */
     @Override
-    public void onProgressChanged(int newProgress) {
+    public void onWebProgressChanged(int newProgress) {
         progressBar.setProgress(newProgress);
-
     }
     //--------
 
@@ -121,11 +124,36 @@ public class CustomYoutubePlayer extends RelativeLayout implements CustomWebView
      * 完成載入
      */
     @Override
-    public void onFinished() {
+    public void onWebLoaded() {
         removeView(progressBar);
     }
 
+    //--------
 
+    /***
+     * 當影片播放進度改變
+     * @param second
+     */
+    @Override
+    public void onPlayerCurrent(double second) {
+        customWebViewController.updateProgress(second);
+    }
+
+    //-------
+
+    /***
+     * 當取得影片總時長
+     * @param duration
+     */
+    @Override
+    public void onPlayerDuration(double duration) {
+        customWebViewController.setDuration(duration);
+    }
+
+    @Override
+    public void onPlayerStateChanged(int newState) {
+        customWebViewController.changePlayButtonIcon(newState == CustomWebViewHandler.PAUSED);
+    }
     //------
 
     /***
@@ -137,6 +165,7 @@ public class CustomYoutubePlayer extends RelativeLayout implements CustomWebView
         }
         customWebView.loadVideo(paramsModel);
     }
+
 
     //------
 
@@ -153,27 +182,15 @@ public class CustomYoutubePlayer extends RelativeLayout implements CustomWebView
      *  控制台初始化
      */
     private void initController() {
-        controllerParams = new LayoutParams(playerWidthPx, (int) (playerHeightPx * 0.12));
+        controllerParams = new LayoutParams(playerWidthPx, (int) (playerHeightPx * 0.1));
         controllerParams.addRule(ALIGN_PARENT_BOTTOM);
         controllerParams.addRule(CENTER_HORIZONTAL);
-        controllerParams.setMargins((int) (playerWidthPx * 0.15), 0, (int) (playerWidthPx * 0.15), (int) (playerHeightPx * 0.12));
-        customWebViewController = new CustomWebViewController(context, controllerParams.width, controllerParams.height);
-        customWebViewController.setOnControllerEventListener(this);
+        controllerParams.setMargins((int) (playerWidthPx * 0.15), 0, (int) (playerWidthPx * 0.15), (int) (playerHeightPx * 0.15));
+        customWebViewController = new CustomWebViewController(context, customWebView, customWebViewHandler, isCanLoadOtherVideo,controllerParams.width, controllerParams.height);
         customWebViewController.setLayoutParams(controllerParams);
         addView(customWebViewController);
         customWebViewController.setVisibility(GONE);
         hideController();
-    }
-
-    //--------
-
-    /***
-     * 當點選控制台的按鈕
-     * @param controllerEvent
-     */
-    @Override
-    public void onEventHappened(int controllerEvent) {
-
     }
 
     //--------
@@ -250,18 +267,59 @@ public class CustomYoutubePlayer extends RelativeLayout implements CustomWebView
                     .start();
         }
     }
+
+
     //------
 
     /***
-     * 是否使用控制台 預設為使用
+     * 釋放webview所佔用記憶體
+     */
+    @Override
+    public void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        clear();
+    }
+    //------
+
+    /***
+     * 釋放webview所佔用記憶體
+     */
+    private void clear() {
+        super.onDetachedFromWindow();
+        removeAllViews();
+        if(customWebView != null){
+            customWebView.setTag(null);
+            customWebView.clearHistory();
+            customWebView.clearCache(true);
+            customWebView.removeAllViews();
+            customWebView.clearView();
+            customWebView.destroy();
+            customWebView = null;
+        }
+    }
+
+
+    //------
+
+    /***
+     * 是否使用控制台 預設為是
      */
     public void setControllerUsed(boolean isController) {
         this.isController = isController;
     }
+    //--------
+    /***
+     * 可否 上一部影片 or 下一部影片
+     */
+    public void canLoadOtherVideo(boolean isCanLoadOtherVideo){
+        this.isCanLoadOtherVideo = isCanLoadOtherVideo;
+    }
+
+
     //-------
 
     /***
-     * 控制台是否為可見
+     * 控制台是否為可見狀態
      */
     public boolean isControllerVisible() {
         return isControllerVisible;

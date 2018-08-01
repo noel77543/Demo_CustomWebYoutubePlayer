@@ -25,9 +25,21 @@ public class CustomWebViewHandler {
 
     private @YoutubePlayerState
     int playState = UNSTARTED;
+
+    //-----
+    //call JavaScript 的method
+    private final String SEEK_TO = "javascript:onSeekTo(%f)";
+    private final String PAUSE = "javascript:onVideoPause()";
+    private final String STOP = "javascript:onVideoStop()";
+    private final String PLAY = "javascript:onVideoPlay()";
+    private final String CUE = "javascript:cueVideo(%s)";
+    private final String LOAD = "javascript:loadVideo(%s,%f)";
+
+
     //---------
 
-    public CustomWebViewHandler( ) { }
+    public CustomWebViewHandler() {
+    }
     //---------
 
     private OnYouTubeEventHappenListener onYouTubeEventHappenListener;
@@ -42,7 +54,6 @@ public class CustomWebViewHandler {
 
     @JavascriptInterface
     public void onReady(String arg) {
-        Log.d(TAG, "onReady(" + arg + ")");
         if (onYouTubeEventHappenListener != null) {
             onYouTubeEventHappenListener.onReady();
         }
@@ -68,7 +79,6 @@ public class CustomWebViewHandler {
 
     @JavascriptInterface
     public void onPlaybackQualityChange(String arg) {
-        Log.d(TAG, "onPlaybackQualityChange(" + arg + ")");
         if (onYouTubeEventHappenListener != null) {
             onYouTubeEventHappenListener.onPlaybackQualityChange(arg);
         }
@@ -76,7 +86,6 @@ public class CustomWebViewHandler {
 
     @JavascriptInterface
     public void onPlaybackRateChange(String arg) {
-        Log.d(TAG, "onPlaybackRateChange(" + arg + ")");
         if (onYouTubeEventHappenListener != null) {
             onYouTubeEventHappenListener.onPlaybackRateChange(arg);
         }
@@ -92,16 +101,15 @@ public class CustomWebViewHandler {
 
     @JavascriptInterface
     public void onApiChange(String arg) {
-        Log.d(TAG, "onApiChange(" + arg + ")");
         if (onYouTubeEventHappenListener != null) {
             onYouTubeEventHappenListener.onApiChange(arg);
         }
     }
 
     @JavascriptInterface
-    public void currentSeconds(String seconds) {
+    public void currentSeconds(String second) {
         if (onYouTubeEventHappenListener != null) {
-            onYouTubeEventHappenListener.onCurrentSecond(Double.parseDouble(seconds));
+            onYouTubeEventHappenListener.onCurrentSecond(Double.parseDouble(second));
         }
     }
 
@@ -114,7 +122,6 @@ public class CustomWebViewHandler {
 
     @JavascriptInterface
     public void logs(String arg) {
-//        Log.d(TAG, "logs(" + arg + ")");
         if (onYouTubeEventHappenListener != null) {
             onYouTubeEventHappenListener.logs(arg);
         }
@@ -142,57 +149,60 @@ public class CustomWebViewHandler {
     }
 
     //-------
-    private void notifyStateChange(@YoutubePlayerState int state) {
+    private void notifyStateChange(@YoutubePlayerState int playState) {
+        this.playState = playState;
         if (onYouTubeEventHappenListener != null) {
-            onYouTubeEventHappenListener.onStateChange(state);
+            onYouTubeEventHappenListener.onStateChange(playState);
         }
-        this.playState = state;
     }
 
     //-----------
 
 
-    /**
-     * APP TO WEB
-     */
-    public void seekToMillis(CustomWebView customWebView, double mil) {
+    public void seekTo(CustomWebView customWebView, double second) {
         Log.d(TAG, "seekToMillis : ");
-        customWebView.loadUrl("javascript:onSeekTo(" + mil + ")");
+        customWebView.loadUrl(String.format(SEEK_TO, second));
     }
+    //-----------
 
     public void pause(CustomWebView customWebView) {
         Log.d(TAG, "pause");
-        customWebView.loadUrl("javascript:onVideoPause()");
+        customWebView.loadUrl(PAUSE);
     }
+    //-----------
 
     public void stop(CustomWebView customWebView) {
         Log.d(TAG, "stop");
-        customWebView.loadUrl("javascript:onVideoStop()");
+        customWebView.loadUrl(STOP);
     }
+    //-----------
 
     public @YoutubePlayerState
-    int getPlayerState(CustomWebView customWebView) {
+    int getPlayerState() {
         Log.d(TAG, "getPlayerState");
         return playState;
     }
+    //-----------
 
     public void play(final CustomWebView customWebView) {
         Log.d(TAG, "play");
         customWebView.post(new Runnable() {
             @Override
             public void run() {
-                customWebView.loadUrl("javascript:onVideoPlay()");            }
+                customWebView.loadUrl(PLAY);
+            }
         });
-//        customWebView.loadUrl("javascript:onVideoPlay()");
     }
+    //-----------
 
-    public void onLoadVideo(CustomWebView customWebView, String videoId, float mil) {
-        Log.d(TAG, "onLoadVideo : " + videoId + ", " + mil);
-        customWebView.loadUrl("javascript:loadVideo('" + videoId + "', " + mil + ")");
+    public void loadVideo(CustomWebView customWebView, String videoId, float second) {
+        Log.d(TAG, "onLoadVideo : " + videoId + ", " + second);
+        customWebView.loadUrl(String.format(LOAD, videoId, second));
     }
+    //-----------
 
-    public void onCueVideo(CustomWebView customWebView, String videoId) {
+    public void cueVideo(CustomWebView customWebView, String videoId) {
         Log.d(TAG, "onCueVideo : " + videoId);
-        customWebView.loadUrl("javascript:cueVideo('" + videoId + "')");
+        customWebView.loadUrl(String.format(CUE, videoId));
     }
 }

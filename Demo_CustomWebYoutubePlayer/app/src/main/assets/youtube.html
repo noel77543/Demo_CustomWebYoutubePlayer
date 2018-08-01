@@ -60,23 +60,24 @@
  
   var timerId = 0;
   function onPlayerStateChange(event) {
-    clearTimeout(timerId);
     switch (event.data) {
       case YT.PlayerState.UNSTARTED:
         onStateChange("UNSTARTED");
         break;
       case YT.PlayerState.ENDED:
         onStateChange("ENDED");
+        clearTimeout(timerId);
         break;
       case YT.PlayerState.PLAYING:
         player.unloadModule("captions");
         onStateChange("PLAYING");
-        timerId = setInterval(function() {
+        timerId = setTimeout(function() {
           setCurrentSeconds();
-        }, 100);
+        }, 500);
         break;
       case YT.PlayerState.PAUSED:
         onStateChange("PAUSED");
+         clearTimeout(timerId);
         break;
       case YT.PlayerState.BUFFERING:
         onStateChange("BUFFERING");
@@ -132,7 +133,11 @@
   }
  
   function setCurrentSeconds(){
+    console.log('timeTTT ' + player.getCurrentTime());
     window.NoelInterface.currentSeconds(player.getCurrentTime());
+    timerId = setTimeout(function() {
+          setCurrentSeconds();
+        }, 500);
   }
  
   function sendDuration(){

@@ -27,7 +27,9 @@ public class CustomWebView extends WebView implements CustomWebChromeClient.onPr
     private CustomWebViewHandler customWebViewHandler;
     private CustomWebViewClient customWebViewClient;
     private CustomWebChromeClient customWebChromeClient;
-    private OnProgressChangeListener onProgressChangeListener;
+    private OnWebProgressChangeListener onWebProgressChangeListener;
+    private OnPlayerProgressChangeListener onPlayerProgressChangeListener;
+    private OnPlayerStateChangeListener onPlayerStateChangeListener;
 
     public CustomWebView(Context context, CustomWebViewHandler customWebViewHandler) {
         super(context);
@@ -67,21 +69,10 @@ public class CustomWebView extends WebView implements CustomWebChromeClient.onPr
     @SuppressLint("JavascriptInterface")
     public void loadVideo(ParamsModel paramsModel) {
         this.paramsModel = paramsModel;
-        Log.e("loadVideo", "paramsModel");
-
         setLayerType(View.LAYER_TYPE_NONE, null);
-        Log.e("loadVideo", "LAYER_TYPE_NONE");
-
-
         measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
-        Log.e("loadVideo", "UNSPECIFIED");
-
         addJavascriptInterface(customWebViewHandler, _JS_INTERFACE);
-        Log.e("loadVideo", "customWebViewHandler");
-
         loadDataWithBaseURL(_DOMAIN, getYoutubeHTML(), _TYPE, _ENCODING, null);
-        Log.e("loadVideo", "loadDataWithBaseURL");
-
     }
 
     //----------
@@ -127,9 +118,9 @@ public class CustomWebView extends WebView implements CustomWebChromeClient.onPr
     @Override
     public void onProgressChanged(int newProgress) {
         if (newProgress > 95) {
-            onProgressChangeListener.onFinished();
+            onWebProgressChangeListener.onWebLoaded();
         } else {
-            onProgressChangeListener.onProgressChanged(newProgress);
+            onWebProgressChangeListener.onWebProgressChanged(newProgress);
         }
     }
 
@@ -139,19 +130,26 @@ public class CustomWebView extends WebView implements CustomWebChromeClient.onPr
     @Override
     public void onReady() {
         if (paramsModel != null && paramsModel.getAutoPlay().equals("1")) {
-            Log.e("play", "play");
             customWebViewHandler.play(this);
         }
     }
     //---------
 
+    /***
+     * 當狀態改變
+     * @param state
+     */
     @Override
     public void onStateChange(int state) {
-
+        onPlayerStateChangeListener.onPlayerStateChanged(state);
     }
 
     //-------
 
+    /***
+     * 當畫值調整
+     * @param arg
+     */
     @Override
     public void onPlaybackQualityChange(String arg) {
 
@@ -165,6 +163,10 @@ public class CustomWebView extends WebView implements CustomWebChromeClient.onPr
     }
     //------
 
+    /***
+     * 發生錯誤
+     * @param arg
+     */
     @Override
     public void onError(String arg) {
 
@@ -179,13 +181,13 @@ public class CustomWebView extends WebView implements CustomWebChromeClient.onPr
 
     @Override
     public void onCurrentSecond(double second) {
-
+        onPlayerProgressChangeListener.onPlayerCurrent(second);
     }
     //------
 
     @Override
     public void onDuration(double duration) {
-
+        onPlayerProgressChangeListener.onPlayerDuration(duration);
     }
     //------
 
@@ -194,25 +196,45 @@ public class CustomWebView extends WebView implements CustomWebChromeClient.onPr
 
     }
 
+    //-------
+
+    /***
+     * 載入網頁資源進度監聽
+     */
+    public interface OnWebProgressChangeListener {
+        void onWebProgressChanged(int newProgress);
+
+        void onWebLoaded();
+    }
+
+    public void setOnWebProgressChangeListener(OnWebProgressChangeListener onWebProgressChangeListener) {
+        this.onWebProgressChangeListener = onWebProgressChangeListener;
+    }
+
+    //---------
+
+    /***
+     * 影片播放進度
+     */
+    public interface OnPlayerProgressChangeListener {
+        void onPlayerCurrent(double second);
+
+        void onPlayerDuration(double duration);
+    }
+
+    public void setOnPlayerProgressChangeListener(OnPlayerProgressChangeListener onPlayerProgressChangeListener) {
+        this.onPlayerProgressChangeListener = onPlayerProgressChangeListener;
+    }
     //------
 
     /***
-     * 在調用此Webview時 記得在ondestroy接口call此 method進行清除
+     * 撥放器狀態改變
      */
-    public void clear() {
-        super.onDetachedFromWindow();
-        this.clearCache(true);
-        this.clearHistory();
+    public interface OnPlayerStateChangeListener {
+        void onPlayerStateChanged(@CustomWebViewHandler.YoutubePlayerState int newState);
     }
 
-    //-------
-    public interface OnProgressChangeListener {
-        void onProgressChanged(int newProgress);
-
-        void onFinished();
-    }
-
-    public void setOnProgressChangeListener(OnProgressChangeListener onProgressChangeListener) {
-        this.onProgressChangeListener = onProgressChangeListener;
+    public void setOnPlayerStateChangeListener(OnPlayerStateChangeListener onPlayerStateChangeListener) {
+        this.onPlayerStateChangeListener = onPlayerStateChangeListener;
     }
 }

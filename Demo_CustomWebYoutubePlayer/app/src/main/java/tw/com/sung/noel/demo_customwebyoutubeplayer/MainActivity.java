@@ -11,11 +11,19 @@ public class MainActivity extends FragmentActivity {
 
     private CustomYoutubePlayer customYoutubePlayer;
 
+    //影音
+    private final String YOUTUBE_ID = "_sQSXwdtxlY";
+    //直播
+//    private final String YOUTUBE_ID = "4ZVUmEUFwaY";
+
+    private final String LANGUAGE = "en";
+    private final String BACKGROUND_COLOR = "#000000";
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         customYoutubePlayer = (CustomYoutubePlayer) findViewById(R.id.custom_youtube_player);
+//        customYoutubePlayer.canLoadOtherVideo(false);
 //        customYoutubePlayer.setControllerUsed(false);
         customYoutubePlayer.loadVideo(getParams());
     }
@@ -23,14 +31,13 @@ public class MainActivity extends FragmentActivity {
     //--------
 
     /***
-     *
-     * @return
+     * 參數設定
      */
     private ParamsModel getParams() {
         ParamsModel paramsModel = new ParamsModel();
-        paramsModel.setBgColor("#000000");
-        paramsModel.setYoutubeId("4ZVUmEUFwaY");
-        paramsModel.setCcLangPref("en");
+        paramsModel.setBgColor(BACKGROUND_COLOR);
+        paramsModel.setYoutubeId(YOUTUBE_ID);
+        paramsModel.setCcLangPref(LANGUAGE);
         paramsModel.setAutoHide(false);
         paramsModel.setAutoPlay(true);
         paramsModel.setControls(false);
@@ -42,6 +49,7 @@ public class MainActivity extends FragmentActivity {
         return paramsModel;
     }
 
+    //--------
 
     @Override
     public void onBackPressed() {
