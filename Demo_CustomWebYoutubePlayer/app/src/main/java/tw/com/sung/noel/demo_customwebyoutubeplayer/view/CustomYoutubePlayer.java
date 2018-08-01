@@ -32,7 +32,7 @@ public class CustomYoutubePlayer extends RelativeLayout implements CustomWebView
     //若有使用控制台 目前controller是否為可見 預設為false
     private boolean isControllerVisible;
     //可否 上一部影片 or 下一部影片 預設為true
-    private boolean isCanLoadOtherVideo =true;
+    private boolean isCanLoadOtherVideo = true;
 
     private int playerHeightPx;
     private int playerWidthPx;
@@ -152,7 +152,7 @@ public class CustomYoutubePlayer extends RelativeLayout implements CustomWebView
 
     @Override
     public void onPlayerStateChanged(int newState) {
-        customWebViewController.changePlayButtonIcon(newState == CustomWebViewHandler.PAUSED);
+        customWebViewController.changePlayButtonIcon(newState == CustomWebViewHandler.PAUSED || newState == CustomWebViewHandler.ENDED);
     }
     //------
 
@@ -186,7 +186,7 @@ public class CustomYoutubePlayer extends RelativeLayout implements CustomWebView
         controllerParams.addRule(ALIGN_PARENT_BOTTOM);
         controllerParams.addRule(CENTER_HORIZONTAL);
         controllerParams.setMargins((int) (playerWidthPx * 0.15), 0, (int) (playerWidthPx * 0.15), (int) (playerHeightPx * 0.15));
-        customWebViewController = new CustomWebViewController(context, customWebView, customWebViewHandler, isCanLoadOtherVideo,controllerParams.width, controllerParams.height);
+        customWebViewController = new CustomWebViewController(context, customWebView, customWebViewHandler, isCanLoadOtherVideo, controllerParams.width, controllerParams.height);
         customWebViewController.setLayoutParams(controllerParams);
         addView(customWebViewController);
         customWebViewController.setVisibility(GONE);
@@ -287,7 +287,7 @@ public class CustomYoutubePlayer extends RelativeLayout implements CustomWebView
     private void clear() {
         super.onDetachedFromWindow();
         removeAllViews();
-        if(customWebView != null){
+        if (customWebView != null) {
             customWebView.setTag(null);
             customWebView.clearHistory();
             customWebView.clearCache(true);
@@ -308,10 +308,11 @@ public class CustomYoutubePlayer extends RelativeLayout implements CustomWebView
         this.isController = isController;
     }
     //--------
+
     /***
      * 可否 上一部影片 or 下一部影片
      */
-    public void canLoadOtherVideo(boolean isCanLoadOtherVideo){
+    public void canLoadOtherVideo(boolean isCanLoadOtherVideo) {
         this.isCanLoadOtherVideo = isCanLoadOtherVideo;
     }
 

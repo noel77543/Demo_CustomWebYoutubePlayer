@@ -370,12 +370,12 @@ public class CustomWebViewController extends RelativeLayout implements View.OnFo
         }
         //play / pause
         else if (id == playId) {
-            Log.e("click", ""+customWebViewHandler.getPlayerState());
             switch (customWebViewHandler.getPlayerState()) {
                 case CustomWebViewHandler.PLAYING:
                     customWebViewHandler.pause(customWebView);
                     break;
                 case CustomWebViewHandler.PAUSED:
+                case CustomWebViewHandler.ENDED:
                     customWebViewHandler.play(customWebView);
                     break;
             }
