@@ -12,7 +12,7 @@ public class MainActivity extends FragmentActivity {
     private CustomYoutubePlayer customYoutubePlayer;
 
     //影音
-    private final String YOUTUBE_ID = "_sQSXwdtxlY";
+    private final String YOUTUBE_ID = "y_cRDZXc3Hk";
     //直播
 //    private final String YOUTUBE_ID = "4ZVUmEUFwaY";
 
