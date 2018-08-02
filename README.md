@@ -22,7 +22,7 @@ Android TV
 
 
 ###布局說明-
-簡單的布局在外層為任一Layout將CustomYoutubePlayer置入其中並使之置中後,命名其ID及寬高,由於控制項是基於Player大小作揖定比例的調整,故這裡的設置將會影響控制項的大小,並不會出現空置項大於介面的情況。
+簡單的布局在外層為任一Layout將CustomYoutubePlayer置入其中並使之置中後,命名其ID及寬高,由於控制項是基於Player大小彈性進行比例的調整,故這裡的設置將會影響控制項的大小,並不會出現控制項超出介面的情況。
 
 
 ###SampleCode-
