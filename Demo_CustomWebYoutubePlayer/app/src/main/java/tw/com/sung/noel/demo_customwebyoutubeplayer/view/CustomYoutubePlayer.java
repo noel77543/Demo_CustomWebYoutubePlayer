@@ -91,6 +91,7 @@ public class CustomYoutubePlayer extends RelativeLayout implements CustomWebView
         params.addRule(CENTER_VERTICAL);
         progressBar.setProgressDrawable(context.getDrawable(R.drawable.layer_list_circle_loading));
         progressBar.setMax(100);
+        progressBar.setSecondaryProgress(100);
         progressBar.setLayoutParams(params);
         addView(progressBar);
     }

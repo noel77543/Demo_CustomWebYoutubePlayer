@@ -8,6 +8,8 @@
 
 
 
+
+    <color name="loading_circle_bg">#dc818181</color>
     <color name="loading_circle">#FF4081</color>
 
     <color name="progress">#8abdf6</color>
