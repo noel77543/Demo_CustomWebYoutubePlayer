@@ -13,6 +13,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
+import java.lang.ref.WeakReference;
+
 import tw.com.sung.noel.demo_customwebyoutubeplayer.R;
 import tw.com.sung.noel.demo_customwebyoutubeplayer.view.util.TimeUtil;
 import tw.com.sung.noel.demo_customwebyoutubeplayer.view.webview.CustomWebView;
@@ -61,6 +63,8 @@ public class CustomWebViewController extends RelativeLayout implements View.OnFo
     private int intProgress;
     //可否 上一部影片 or 下一部影片
     private boolean isCanLoadOtherVideo;
+    //是否為播放中
+    private boolean isPlaying;
 
     //-------
     public CustomWebViewController(Context context, CustomWebView customWebView, CustomWebViewHandler customWebViewHandler, boolean isCanLoadOtherVideo, int layoutWidth, int layoutHeight) {
@@ -282,7 +286,7 @@ public class CustomWebViewController extends RelativeLayout implements View.OnFo
      * 更新進度
      */
     public void updateProgress(double progress) {
-        int intProgress = (int)Math.round(progress);
+        int intProgress = (int) Math.round(progress);
         this.intProgress = intProgress;
         progressBar.setProgress(intProgress);
         Message msg = playerHandler.obtainMessage();
@@ -308,11 +312,13 @@ public class CustomWebViewController extends RelativeLayout implements View.OnFo
      * 改變playButton 的icon
      */
     public void changePlayButtonIcon(boolean isPlaying) {
-        ivPlay.setImageResource(isPlaying ? R.drawable.ic_play : R.drawable.ic_pause);
+        this.isPlaying = isPlaying;
+        Message msg = playerHandler.obtainMessage();
+        msg.what = 3;
+        msg.sendToTarget();
     }
 
-
-    //---------------
+    //----------------
 
     Handler playerHandler = new Handler() {
         @Override
@@ -321,6 +327,8 @@ public class CustomWebViewController extends RelativeLayout implements View.OnFo
                 tvCurrentTime.setText(timeUtil.convertSecondToMinute(intProgress));
             } else if (msg.what == 2) {
                 tvTotalTime.setText(timeUtil.convertSecondToMinute(intDuration));
+            }else if(msg.what == 3){
+                ivPlay.setImageResource(isPlaying ? R.drawable.ic_play : R.drawable.ic_pause);
             }
             super.handleMessage(msg);
         }
