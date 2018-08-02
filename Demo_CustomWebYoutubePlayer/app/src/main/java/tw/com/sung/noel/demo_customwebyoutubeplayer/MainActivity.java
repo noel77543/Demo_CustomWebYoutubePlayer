@@ -38,7 +38,7 @@ public class MainActivity extends FragmentActivity {
         paramsModel.setBgColor(BACKGROUND_COLOR);
         paramsModel.setYoutubeId(YOUTUBE_ID);
         paramsModel.setCcLangPref(LANGUAGE);
-        paramsModel.setAutoHide(false);
+        paramsModel.setAutoHide(true);
         paramsModel.setAutoPlay(true);
         paramsModel.setControls(false);
         paramsModel.setDisableKB(true);

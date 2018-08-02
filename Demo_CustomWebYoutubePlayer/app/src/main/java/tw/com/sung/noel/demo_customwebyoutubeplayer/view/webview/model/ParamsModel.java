@@ -1,17 +1,17 @@
 package tw.com.sung.noel.demo_customwebyoutubeplayer.view.webview.model;
 
 public class ParamsModel {
-    private String youtubeId;
-    private String bgColor;
-    private String autoPlay;
-    private String autoHide;
-    private String rel;
-    private String showInfo;
-    private String enableJSApi;
-    private String disableKB;
-    private String ccLangPref;
-    private String controls;
-    private String fs;
+    private String youtubeId="";
+    private String bgColor="";
+    private String autoPlay="1";
+    private String autoHide="1";
+    private String rel="0";
+    private String showInfo="0";
+    private String enableJSApi="1";
+    private String disableKB="1";
+    private String ccLangPref="en";
+    private String controls="0";
+    private String fs="1";
 
 
     public String getYoutubeId() {

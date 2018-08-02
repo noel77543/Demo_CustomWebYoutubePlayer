@@ -282,7 +282,7 @@ public class CustomWebViewController extends RelativeLayout implements View.OnFo
      * 更新進度
      */
     public void updateProgress(double progress) {
-        int intProgress = (int) progress;
+        int intProgress = (int)Math.round(progress);
         this.intProgress = intProgress;
         progressBar.setProgress(intProgress);
         Message msg = playerHandler.obtainMessage();

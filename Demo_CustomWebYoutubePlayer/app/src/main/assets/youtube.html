@@ -133,7 +133,6 @@
   }
  
   function setCurrentSeconds(){
-    console.log('timeTTT ' + player.getCurrentTime());
     window.NoelInterface.currentSeconds(player.getCurrentTime());
     timerId = setTimeout(function() {
           setCurrentSeconds();
