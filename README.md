@@ -98,6 +98,7 @@ Android TV
 3. customYoutubePlayer.loadVideo(getParams());
 
 	//帶入自訂參數設定包含youtubeID,是否播放畫面佔滿整個CustomYoutubePlayer等...
+	//***重點 上述兩個method如有需進行非預設值調整須在loadVideo之前調用***
 
 4. ParamsModel
 
