@@ -160,32 +160,32 @@ public class CustomWebViewHandler {
 
 
     public void seekTo(CustomWebView customWebView, double second) {
-        Log.d(TAG, "seekToMillis : ");
+//        Log.d(TAG, "seekToMillis : ");
         customWebView.loadUrl(String.format(SEEK_TO, second));
     }
     //-----------
 
     public void pause(CustomWebView customWebView) {
-        Log.d(TAG, "pause");
+//        Log.d(TAG, "pause");
         customWebView.loadUrl(PAUSE);
     }
     //-----------
 
     public void stop(CustomWebView customWebView) {
-        Log.d(TAG, "stop");
+//        Log.d(TAG, "stop");
         customWebView.loadUrl(STOP);
     }
     //-----------
 
     public @YoutubePlayerState
     int getPlayerState() {
-        Log.d(TAG, "getPlayerState");
+//        Log.d(TAG, "getPlayerState");
         return playState;
     }
     //-----------
 
     public void play(final CustomWebView customWebView) {
-        Log.d(TAG, "play");
+//        Log.d(TAG, "play");
         customWebView.post(new Runnable() {
             @Override
             public void run() {

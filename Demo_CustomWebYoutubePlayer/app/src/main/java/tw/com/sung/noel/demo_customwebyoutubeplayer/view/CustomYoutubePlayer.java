@@ -153,7 +153,9 @@ public class CustomYoutubePlayer extends RelativeLayout implements CustomWebView
 
     @Override
     public void onPlayerStateChanged(int newState) {
-        customWebViewController.changePlayButtonIcon(newState == CustomWebViewHandler.PAUSED || newState == CustomWebViewHandler.ENDED);
+        if(isController){
+            customWebViewController.changePlayButtonIcon(newState == CustomWebViewHandler.PAUSED || newState == CustomWebViewHandler.ENDED);
+        }
     }
     //------
 
