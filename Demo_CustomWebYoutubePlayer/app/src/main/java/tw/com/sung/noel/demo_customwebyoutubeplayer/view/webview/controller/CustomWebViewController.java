@@ -2,6 +2,8 @@ package tw.com.sung.noel.demo_customwebyoutubeplayer.view.webview.controller;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -20,10 +22,11 @@ import tw.com.sung.noel.demo_customwebyoutubeplayer.view.util.TimeUtil;
 import tw.com.sung.noel.demo_customwebyoutubeplayer.view.webview.CustomWebView;
 import tw.com.sung.noel.demo_customwebyoutubeplayer.view.webview.CustomWebViewHandler;
 
-public class CustomWebViewController extends RelativeLayout implements View.OnFocusChangeListener, View.OnClickListener {
+public class CustomWebViewController extends RelativeLayout implements View.OnClickListener {
 
+    private OnLoadMoreClickListener onLoadMoreClickListener;
     //按鈕的尺寸倍率
-    private final double BUTTON_SIZE = 0.25;
+    private final double BUTTON_SIZE = 0.5;
     //快轉 / 倒退 的變動秒數
     private final int PLAYER_TIME_VARIATION = 15;
 
@@ -80,6 +83,14 @@ public class CustomWebViewController extends RelativeLayout implements View.OnFo
 
         initProgressBar();
         initInnerLayout();
+        ivPlay.setNextFocusRightId(accelerateId);
+        ivPlay.setNextFocusLeftId(backId);
+        ivAccelerate.setNextFocusLeftId(playId);
+        ivAccelerate.setNextFocusRightId(nextId);
+        ivNext.setNextFocusLeftId(accelerateId);
+        ivBack.setNextFocusRightId(playId);
+        ivBack.setNextFocusLeftId(previousId);
+        ivPrevious.setNextFocusRightId(backId);
     }
 
 
@@ -89,7 +100,7 @@ public class CustomWebViewController extends RelativeLayout implements View.OnFo
      * 置頂進度條
      */
     private void initProgressBar() {
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(layoutWidth, (int) (layoutHeight * 0.08));
+        LayoutParams params = new LayoutParams(layoutWidth, (int) (layoutHeight * 0.08));
 
         progressBar = new ProgressBar(context, null, android.R.attr.progressBarStyleHorizontal);
         progressBar.setProgressDrawable(context.getDrawable(R.drawable.layer_list_controller_progress));
@@ -103,7 +114,7 @@ public class CustomWebViewController extends RelativeLayout implements View.OnFo
      * 內部layout
      */
     private void initInnerLayout() {
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         params.addRule(BELOW, progressBar.getId());
         params.addRule(ALIGN_PARENT_START);
         innerLayout = new RelativeLayout(context);
@@ -111,15 +122,18 @@ public class CustomWebViewController extends RelativeLayout implements View.OnFo
         innerLayout.setLayoutParams(params);
         innerLayout.setBackgroundColor(context.getResources().getColor(R.color.controller_bg));
         addView(innerLayout);
+
         initCurrentTextView();
         initTotalTextView();
-
         initPlayButton();
         initBackButton();
         initAccelerateButton();
-        if (isCanLoadOtherVideo) {
-            initPreviousButton();
-            initNextButton();
+        initPreviousButton();
+        initNextButton();
+
+        if (!isCanLoadOtherVideo) {
+            ivPrevious.setVisibility(INVISIBLE);
+            ivNext.setVisibility(INVISIBLE);
         }
 
     }
@@ -129,7 +143,7 @@ public class CustomWebViewController extends RelativeLayout implements View.OnFo
      * 目前時間 textview
      */
     private void initCurrentTextView() {
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.addRule(ALIGN_PARENT_START);
         params.addRule(ALIGN_PARENT_TOP);
         params.setMargins(20, 10, 0, 0);
@@ -146,7 +160,7 @@ public class CustomWebViewController extends RelativeLayout implements View.OnFo
      * 總時間 textview
      */
     private void initTotalTextView() {
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.addRule(ALIGN_PARENT_END);
         params.addRule(ALIGN_PARENT_TOP);
         params.setMargins(0, 10, 20, 0);
@@ -163,7 +177,7 @@ public class CustomWebViewController extends RelativeLayout implements View.OnFo
      * 　播放 / 暫停  button
      */
     private void initPlayButton() {
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams((int) (layoutHeight * BUTTON_SIZE), (int) (layoutHeight * BUTTON_SIZE));
+        LayoutParams params = new LayoutParams((int) (layoutHeight * BUTTON_SIZE), (int) (layoutHeight * BUTTON_SIZE));
         params.addRule(BELOW, tvTotalTime.getId());
         params.addRule(CENTER_HORIZONTAL);
 
@@ -174,8 +188,9 @@ public class CustomWebViewController extends RelativeLayout implements View.OnFo
         ivPlay.setFocusable(true);
         ivPlay.setFocusableInTouchMode(true);
         ivPlay.setOnClickListener(this);
-        ivPlay.setOnFocusChangeListener(this);
+        ivPlay.setBackground(getCustomBackgroundSelector());
         ivPlay.setImageResource(R.drawable.ic_pause);
+        ivPlay.setPadding(15, 15, 15, 15);
         innerLayout.addView(ivPlay);
     }
 
@@ -185,7 +200,7 @@ public class CustomWebViewController extends RelativeLayout implements View.OnFo
      * 倒退15秒 button
      */
     private void initBackButton() {
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams((int) (layoutHeight * BUTTON_SIZE), (int) (layoutHeight * BUTTON_SIZE));
+        LayoutParams params = new LayoutParams((int) (layoutHeight * BUTTON_SIZE), (int) (layoutHeight * BUTTON_SIZE));
         params.addRule(BELOW, tvTotalTime.getId());
         params.addRule(START_OF, ivPlay.getId());
         params.rightMargin = ivMargin;
@@ -196,10 +211,11 @@ public class CustomWebViewController extends RelativeLayout implements View.OnFo
         ivBack.setId(backId);
         ivBack.setFocusable(true);
         ivBack.setFocusableInTouchMode(true);
-        ivBack.setOnFocusChangeListener(this);
         ivBack.setOnClickListener(this);
         ivBack.setScaleType(ImageView.ScaleType.FIT_XY);
+        ivBack.setBackground(getCustomBackgroundSelector());
         ivBack.setImageResource(R.drawable.ic_back);
+        ivBack.setPadding(15, 15, 15, 15);
         innerLayout.addView(ivBack);
     }
 
@@ -209,7 +225,7 @@ public class CustomWebViewController extends RelativeLayout implements View.OnFo
      * 前一部 button
      */
     private void initPreviousButton() {
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams((int) (layoutHeight * BUTTON_SIZE), (int) (layoutHeight * BUTTON_SIZE));
+        LayoutParams params = new LayoutParams((int) (layoutHeight * BUTTON_SIZE), (int) (layoutHeight * BUTTON_SIZE));
         params.addRule(BELOW, tvCurrentTime.getId());
         params.addRule(START_OF, ivBack.getId());
         params.rightMargin = ivMargin;
@@ -219,10 +235,11 @@ public class CustomWebViewController extends RelativeLayout implements View.OnFo
         ivPrevious.setId(previousId);
         ivPrevious.setFocusable(true);
         ivPrevious.setFocusableInTouchMode(true);
-        ivPrevious.setOnFocusChangeListener(this);
         ivPrevious.setOnClickListener(this);
         ivPrevious.setLayoutParams(params);
+        ivPrevious.setBackground(getCustomBackgroundSelector());
         ivPrevious.setImageResource(R.drawable.ic_previous);
+        ivPrevious.setPadding(15, 15, 15, 15);
         innerLayout.addView(ivPrevious);
     }
 
@@ -232,7 +249,7 @@ public class CustomWebViewController extends RelativeLayout implements View.OnFo
      * 快轉15秒 button
      */
     private void initAccelerateButton() {
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams((int) (layoutHeight * BUTTON_SIZE), (int) (layoutHeight * BUTTON_SIZE));
+        LayoutParams params = new LayoutParams((int) (layoutHeight * BUTTON_SIZE), (int) (layoutHeight * BUTTON_SIZE));
         params.addRule(BELOW, tvTotalTime.getId());
         params.addRule(END_OF, ivPlay.getId());
         params.leftMargin = ivMargin;
@@ -243,10 +260,11 @@ public class CustomWebViewController extends RelativeLayout implements View.OnFo
         ivAccelerate.setId(accelerateId);
         ivAccelerate.setFocusable(true);
         ivAccelerate.setFocusableInTouchMode(true);
-        ivAccelerate.setOnFocusChangeListener(this);
         ivAccelerate.setOnClickListener(this);
         ivAccelerate.setScaleType(ImageView.ScaleType.FIT_XY);
+        ivAccelerate.setBackground(getCustomBackgroundSelector());
         ivAccelerate.setImageResource(R.drawable.ic_accelerate);
+        ivAccelerate.setPadding(15, 15, 15, 15);
         innerLayout.addView(ivAccelerate);
     }
     //---------
@@ -255,7 +273,7 @@ public class CustomWebViewController extends RelativeLayout implements View.OnFo
      * 下一部 button
      */
     private void initNextButton() {
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams((int) (layoutHeight * BUTTON_SIZE), (int) (layoutHeight * BUTTON_SIZE));
+        LayoutParams params = new LayoutParams((int) (layoutHeight * BUTTON_SIZE), (int) (layoutHeight * BUTTON_SIZE));
         params.addRule(BELOW, tvTotalTime.getId());
         params.addRule(END_OF, ivAccelerate.getId());
         params.leftMargin = ivMargin;
@@ -266,9 +284,10 @@ public class CustomWebViewController extends RelativeLayout implements View.OnFo
         ivNext.setId(nextId);
         ivNext.setFocusable(true);
         ivNext.setFocusableInTouchMode(true);
-        ivNext.setOnFocusChangeListener(this);
         ivNext.setOnClickListener(this);
+        ivNext.setBackground(getCustomBackgroundSelector());
         ivNext.setImageResource(R.drawable.ic_next);
+        ivNext.setPadding(15, 15, 15, 15);
         innerLayout.addView(ivNext);
     }
     //----------------
@@ -286,7 +305,7 @@ public class CustomWebViewController extends RelativeLayout implements View.OnFo
      * 更新進度
      */
     public void updateProgress(double progress) {
-        int intProgress = (int) Math.round(progress);
+        int intProgress = (int) Math.round(progress + 1);
         this.intProgress = intProgress;
         progressBar.setProgress(intProgress);
         Message msg = playerHandler.obtainMessage();
@@ -299,7 +318,7 @@ public class CustomWebViewController extends RelativeLayout implements View.OnFo
      * 總時長
      */
     public void setDuration(double duration) {
-        int intDuration = (int) duration;
+        int intDuration = (int) Math.round(duration + 1);
         this.intDuration = intDuration;
         progressBar.setMax(intDuration);
         Message msg = playerHandler.obtainMessage();
@@ -327,29 +346,13 @@ public class CustomWebViewController extends RelativeLayout implements View.OnFo
                 tvCurrentTime.setText(timeUtil.convertSecondToMinute(intProgress));
             } else if (msg.what == 2) {
                 tvTotalTime.setText(timeUtil.convertSecondToMinute(intDuration));
-            }else if(msg.what == 3){
+            } else if (msg.what == 3) {
                 ivPlay.setImageResource(isPlaying ? R.drawable.ic_play : R.drawable.ic_pause);
             }
             super.handleMessage(msg);
         }
     };
 
-    //----------------
-
-    /***
-     * 當focus
-     * @param v
-     * @param hasFocus
-     */
-    @Override
-    public void onFocusChange(View v, boolean hasFocus) {
-        ImageView imageView = findViewById(v.getId());
-        if (hasFocus) {
-            imageView.setBackgroundResource(R.drawable.shape_focus_bg);
-        } else {
-            imageView.setBackgroundResource(0);
-        }
-    }
     //----------------
 
     /***
@@ -362,7 +365,9 @@ public class CustomWebViewController extends RelativeLayout implements View.OnFo
         int id = view.getId();
         //上一部
         if (id == previousId) {
-
+            if (onLoadMoreClickListener != null) {
+                onLoadMoreClickListener.onLoadPreviousVideoClicked();
+            }
         }
         //倒退 15sec
         else if (id == backId) {
@@ -374,7 +379,9 @@ public class CustomWebViewController extends RelativeLayout implements View.OnFo
         }
         //下一部
         else if (id == nextId) {
-
+            if (onLoadMoreClickListener != null) {
+                onLoadMoreClickListener.onLoadNextVideoClicked();
+            }
         }
         //play / pause
         else if (id == playId) {
@@ -389,4 +396,38 @@ public class CustomWebViewController extends RelativeLayout implements View.OnFo
             }
         }
     }
+
+
+    //----------
+
+    private StateListDrawable getCustomBackgroundSelector() {
+        GradientDrawable focusGradientDrawable = new GradientDrawable();
+        focusGradientDrawable.setColor(context.getResources().getColor(R.color.focus_bg));
+        focusGradientDrawable.setShape(GradientDrawable.OVAL);
+
+        GradientDrawable normalGradientDrawable = new GradientDrawable();
+        normalGradientDrawable.setColor(Color.TRANSPARENT);
+        normalGradientDrawable.setShape(GradientDrawable.OVAL);
+
+        StateListDrawable selectorDrawable = new StateListDrawable();
+        selectorDrawable.addState(new int[]{android.R.attr.state_focused}, focusGradientDrawable);
+        selectorDrawable.addState(new int[]{}, normalGradientDrawable);
+
+        return selectorDrawable;
+    }
+
+
+    //---------
+
+    public interface OnLoadMoreClickListener {
+        void onLoadNextVideoClicked();
+
+        void onLoadPreviousVideoClicked();
+    }
+
+    //----------
+    public void setOnLoadMoreClickListener(OnLoadMoreClickListener onLoadMoreClickListener) {
+        this.onLoadMoreClickListener = onLoadMoreClickListener;
+    }
+
 }
