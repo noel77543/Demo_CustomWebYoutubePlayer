@@ -83,13 +83,28 @@ public class CustomWebViewController extends RelativeLayout implements View.OnCl
 
         initProgressBar();
         initInnerLayout();
+
+        ivPlay.setNextFocusUpId(playId);
+        ivPlay.setNextFocusDownId(playId);
         ivPlay.setNextFocusRightId(accelerateId);
         ivPlay.setNextFocusLeftId(backId);
+
+        ivAccelerate.setNextFocusUpId(accelerateId);
+        ivAccelerate.setNextFocusDownId(accelerateId);
         ivAccelerate.setNextFocusLeftId(playId);
         ivAccelerate.setNextFocusRightId(nextId);
+
+        ivNext.setNextFocusUpId(nextId);
+        ivNext.setNextFocusDownId(nextId);
         ivNext.setNextFocusLeftId(accelerateId);
+
+        ivBack.setNextFocusUpId(backId);
+        ivBack.setNextFocusDownId(backId);
         ivBack.setNextFocusRightId(playId);
         ivBack.setNextFocusLeftId(previousId);
+
+        ivPrevious.setNextFocusUpId(previousId);
+        ivPrevious.setNextFocusDownId(previousId);
         ivPrevious.setNextFocusRightId(backId);
     }
 
